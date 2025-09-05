@@ -4,13 +4,14 @@ import DarkVeil from "../utils/DarkVeil";
 const LandingPage = () => {
   return (
     <>
-      <div className="bg-zinc-950 text-white w-full h-screen relative quicksand">
-        {/* Background Layer */}
-        <div className="absolute inset-0 z-0">
-          <DarkVeil />
-        </div>
-        {/* Content Layer */}
-        <div className="relative z-10 flex flex-col justify-center items-center h-full text-center leading-tight ">
+      {/* Fixed DarkVeil Background */}
+      <div className="fixed inset-0 z-0">
+        <DarkVeil />
+      </div>
+
+      {/* Section 1 */}
+      <div className="bg-transparent text-white w-full h-screen relative quicksand">
+        <div className="relative z-10 flex flex-col justify-center items-center h-full text-center leading-tight">
           <p className="mt-2 text-lg text-gray-300">
             AI-Powered Collaborative Whiteboard
           </p>
@@ -20,7 +21,11 @@ const LandingPage = () => {
           </button>
         </div>
       </div>
-      <div className="w-full h-[100vh] z-10 bg-black flex relative justify-center items-center">
+
+      {/* Section 2 */}
+      <div className="w-full h-screen z-10  flex relative justify-center items-center">
+        <div className="text-center px-4 w-[80%] h-[80%] flex flex-col justify-center items-center glassMorph1">
+        </div>
       </div>
     </>
   );
