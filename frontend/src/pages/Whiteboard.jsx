@@ -1,5 +1,18 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Stage, Layer, Rect, Circle, Text, Line, Arrow, Group, Transformer, Ellipse, Star, RegularPolygon } from "react-konva";
+import {
+  Stage,
+  Layer,
+  Rect,
+  Circle,
+  Text,
+  Line,
+  Arrow,
+  Group,
+  Transformer,
+  Ellipse,
+  Star,
+  RegularPolygon,
+} from "react-konva";
 
 // --- Types & Helpers --------------------------------------------------------
 const TOOLS = {
@@ -20,10 +33,32 @@ const TOOLS = {
 };
 
 const COLOR_PALETTE = [
-  "#000000", "#374151", "#6b7280", "#9ca3af", "#d1d5db", "#f3f4f6", "#ffffff",
-  "#dc2626", "#ea580c", "#d97706", "#ca8a04", "#65a30d", "#16a34a", "#059669",
-  "#0891b2", "#0284c7", "#2563eb", "#4f46e5", "#7c3aed", "#a21caf", "#be185d",
-  "#fef2f2", "#fef3c7", "#ecfdf5", "#f0f9ff", "#f3e8ff",
+  "#000000",
+  "#374151",
+  "#6b7280",
+  "#9ca3af",
+  "#d1d5db",
+  "#f3f4f6",
+  "#ffffff",
+  "#dc2626",
+  "#ea580c",
+  "#d97706",
+  "#ca8a04",
+  "#65a30d",
+  "#16a34a",
+  "#059669",
+  "#0891b2",
+  "#0284c7",
+  "#2563eb",
+  "#4f46e5",
+  "#7c3aed",
+  "#a21caf",
+  "#be185d",
+  "#fef2f2",
+  "#fef3c7",
+  "#ecfdf5",
+  "#f0f9ff",
+  "#f3e8ff",
 ];
 
 function uid(prefix = "el") {
@@ -40,14 +75,18 @@ function downloadURI(uri, name) {
 }
 
 function isPointInRect(point, rect) {
-  return point.x >= rect.x && point.x <= rect.x + rect.width &&
-         point.y >= rect.y && point.y <= rect.y + rect.height;
+  return (
+    point.x >= rect.x &&
+    point.x <= rect.x + rect.width &&
+    point.y >= rect.y &&
+    point.y <= rect.y + rect.height
+  );
 }
 
 // --- Color Palette Component -----------------------------------------------
 function ColorPalette({ selectedColor, onColorSelect, type = "fill" }) {
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <div className="relative">
       <button
@@ -76,13 +115,34 @@ function ColorPalette({ selectedColor, onColorSelect, type = "fill" }) {
 }
 
 // --- Toolbar Component ------------------------------------------------------
-function Toolbar({ 
-  tool, setTool, undo, redo, canUndo, canRedo, onDelete, onExportPNG, onExportJSON, onImportJSON, 
-  zoom, setZoom, fillColor, setFillColor, strokeColor, setStrokeColor, strokeWidth, setStrokeWidth,
-  selectedElements, onCopy, onPaste, onDuplicate, onGroup, onUngroup
+function Toolbar({
+  tool,
+  setTool,
+  undo,
+  redo,
+  canUndo,
+  canRedo,
+  onDelete,
+  onExportPNG,
+  onExportJSON,
+  onImportJSON,
+  zoom,
+  setZoom,
+  fillColor,
+  setFillColor,
+  strokeColor,
+  setStrokeColor,
+  strokeWidth,
+  setStrokeWidth,
+  selectedElements,
+  onCopy,
+  onPaste,
+  onDuplicate,
+  onGroup,
+  onUngroup,
 }) {
   const fileInputRef = useRef(null);
-  
+
   const toolButtons = [
     { key: TOOLS.SELECT, label: "Select", icon: "↖️" },
     { key: TOOLS.RECT_SELECT, label: "Rect Select", icon: "⬜" },
@@ -108,7 +168,9 @@ function Toolbar({
             key={key}
             onClick={() => setTool(key)}
             className={`px-2 py-1 rounded-lg border transition-colors ${
-              tool === key ? "bg-blue-500 text-white border-blue-500" : "bg-white hover:bg-gray-100 border-gray-300"
+              tool === key
+                ? "bg-blue-500 text-white border-blue-500"
+                : "bg-white hover:bg-gray-100 border-gray-300"
             }`}
             title={label}
           >
@@ -120,14 +182,22 @@ function Toolbar({
       <div className="flex items-center gap-2 text-sm">
         <div className="flex items-center gap-1">
           <span className="text-xs">Fill:</span>
-          <ColorPalette selectedColor={fillColor} onColorSelect={setFillColor} type="fill" />
+          <ColorPalette
+            selectedColor={fillColor}
+            onColorSelect={setFillColor}
+            type="fill"
+          />
         </div>
-        
+
         <div className="flex items-center gap-1">
           <span className="text-xs">Stroke:</span>
-          <ColorPalette selectedColor={strokeColor} onColorSelect={setStrokeColor} type="stroke" />
+          <ColorPalette
+            selectedColor={strokeColor}
+            onColorSelect={setStrokeColor}
+            type="stroke"
+          />
         </div>
-        
+
         <div className="flex items-center gap-1">
           <span className="text-xs">Width:</span>
           <input
@@ -142,24 +212,61 @@ function Toolbar({
         </div>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
-        
-        <button onClick={undo} disabled={!canUndo} className="px-2 py-1 rounded-lg border disabled:opacity-40 text-xs">↶</button>
-        <button onClick={redo} disabled={!canRedo} className="px-2 py-1 rounded-lg border disabled:opacity-40 text-xs">↷</button>
-        
+
+        <button
+          onClick={undo}
+          disabled={!canUndo}
+          className="px-2 py-1 rounded-lg border disabled:opacity-40 text-xs"
+        >
+          ↶
+        </button>
+        <button
+          onClick={redo}
+          disabled={!canRedo}
+          className="px-2 py-1 rounded-lg border disabled:opacity-40 text-xs"
+        >
+          ↷
+        </button>
+
         {selectedElements.length > 0 && (
           <>
-            <button onClick={onDelete} className="px-2 py-1 rounded-lg border text-xs">Delete</button>
-            <button onClick={onCopy} className="px-2 py-1 rounded-lg border text-xs">Copy</button>
-            <button onClick={onDuplicate} className="px-2 py-1 rounded-lg border text-xs">Duplicate</button>
+            <button
+              onClick={onDelete}
+              className="px-2 py-1 rounded-lg border text-xs"
+            >
+              Delete
+            </button>
+            <button
+              onClick={onCopy}
+              className="px-2 py-1 rounded-lg border text-xs"
+            >
+              Copy
+            </button>
+            <button
+              onClick={onDuplicate}
+              className="px-2 py-1 rounded-lg border text-xs"
+            >
+              Duplicate
+            </button>
             {selectedElements.length > 1 && (
-              <button onClick={onGroup} className="px-2 py-1 rounded-lg border text-xs">Group</button>
+              <button
+                onClick={onGroup}
+                className="px-2 py-1 rounded-lg border text-xs"
+              >
+                Group
+              </button>
             )}
           </>
         )}
-        <button onClick={onPaste} className="px-2 py-1 rounded-lg border text-xs">Paste</button>
+        <button
+          onClick={onPaste}
+          className="px-2 py-1 rounded-lg border text-xs"
+        >
+          Paste
+        </button>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
-        
+
         <div className="flex items-center gap-1">
           <span className="text-xs">Zoom:</span>
           <input
@@ -175,11 +282,32 @@ function Toolbar({
         </div>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
-        
-        <button onClick={onExportPNG} className="px-2 py-1 rounded-lg border text-xs">PNG</button>
-        <button onClick={onExportJSON} className="px-2 py-1 rounded-lg border text-xs">JSON</button>
-        <button onClick={() => fileInputRef.current?.click()} className="px-2 py-1 rounded-lg border text-xs">Import</button>
-        <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={onImportJSON} />
+
+        <button
+          onClick={onExportPNG}
+          className="px-2 py-1 rounded-lg border text-xs"
+        >
+          PNG
+        </button>
+        <button
+          onClick={onExportJSON}
+          className="px-2 py-1 rounded-lg border text-xs"
+        >
+          JSON
+        </button>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="px-2 py-1 rounded-lg border text-xs"
+        >
+          Import
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/json"
+          className="hidden"
+          onChange={onImportJSON}
+        />
       </div>
     </div>
   );
@@ -205,18 +333,18 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
     onTransformEnd: () => {
       const node = shapeRef.current;
       if (!node) return;
-      
+
       const scaleX = node.scaleX();
       const scaleY = node.scaleY();
       node.scaleX(1);
       node.scaleY(1);
-      
+
       const newAttrs = {
         x: node.x(),
         y: node.y(),
         rotation: node.rotation(),
       };
-      
+
       if (shape.type === "rect") {
         newAttrs.width = Math.max(5, node.width() * scaleX);
         newAttrs.height = Math.max(5, node.height() * scaleY);
@@ -228,15 +356,21 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
         newAttrs.radiusX = Math.max(5, node.radiusX() * scaleX);
         newAttrs.radiusY = Math.max(5, node.radiusY() * scaleY);
       } else if (shape.type === "star") {
-        newAttrs.outerRadius = Math.max(5, node.outerRadius() * ((scaleX + scaleY) / 2));
-        newAttrs.innerRadius = Math.max(5, node.innerRadius() * ((scaleX + scaleY) / 2));
+        newAttrs.outerRadius = Math.max(
+          5,
+          node.outerRadius() * ((scaleX + scaleY) / 2)
+        );
+        newAttrs.innerRadius = Math.max(
+          5,
+          node.innerRadius() * ((scaleX + scaleY) / 2)
+        );
       } else if (shape.type === "triangle" || shape.type === "hexagon") {
         newAttrs.radius = Math.max(5, node.radius() * ((scaleX + scaleY) / 2));
       } else if (shape.type === "diamond") {
         newAttrs.width = Math.max(5, node.width() * scaleX);
         newAttrs.height = Math.max(5, node.height() * scaleY);
       }
-      
+
       onChange(newAttrs);
     },
   };
@@ -246,7 +380,7 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
       return (
         <Group>
           <Rect
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             x={shape.x}
             y={shape.y}
@@ -261,12 +395,12 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
           {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
         </Group>
       );
-    
+
     case "circle":
       return (
         <Group>
           <Circle
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             x={shape.x}
             y={shape.y}
@@ -276,15 +410,26 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
             strokeWidth={shape.strokeWidth}
             {...common}
           />
-          {isSelected && <Transformer ref={trRef} rotateEnabled={true} enabledAnchors={["top-left","top-right","bottom-left","bottom-right"]} />}
+          {isSelected && (
+            <Transformer
+              ref={trRef}
+              rotateEnabled={true}
+              enabledAnchors={[
+                "top-left",
+                "top-right",
+                "bottom-left",
+                "bottom-right",
+              ]}
+            />
+          )}
         </Group>
       );
-    
+
     case "ellipse":
       return (
         <Group>
           <Ellipse
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             x={shape.x}
             y={shape.y}
@@ -298,12 +443,12 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
           {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
         </Group>
       );
-    
+
     case "triangle":
       return (
         <Group>
           <RegularPolygon
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             x={shape.x}
             y={shape.y}
@@ -317,12 +462,12 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
           {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
         </Group>
       );
-    
+
     case "diamond":
       return (
         <Group>
           <RegularPolygon
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             x={shape.x}
             y={shape.y}
@@ -337,12 +482,12 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
           {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
         </Group>
       );
-    
+
     case "star":
       return (
         <Group>
           <Star
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             x={shape.x}
             y={shape.y}
@@ -357,12 +502,12 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
           {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
         </Group>
       );
-    
+
     case "hexagon":
       return (
         <Group>
           <RegularPolygon
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             x={shape.x}
             y={shape.y}
@@ -376,12 +521,12 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
           {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
         </Group>
       );
-    
+
     case "arrow":
       return (
         <Group>
           <Arrow
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             points={shape.points}
             stroke={shape.stroke}
@@ -390,15 +535,21 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
             pointerWidth={12}
             {...common}
           />
-          {isSelected && <Transformer ref={trRef} rotateEnabled={false} enabledAnchors={[]} />}
+          {isSelected && (
+            <Transformer
+              ref={trRef}
+              rotateEnabled={false}
+              enabledAnchors={[]}
+            />
+          )}
         </Group>
       );
-    
+
     case "text":
       return (
         <Group>
           <Text
-           id={shape.id}
+            id={shape.id}
             ref={shapeRef}
             x={shape.x}
             y={shape.y}
@@ -411,14 +562,20 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
               if (newText !== null) onChange({ text: newText });
             }}
           />
-          {isSelected && <Transformer ref={trRef} rotateEnabled={false} enabledAnchors={["middle-left","middle-right"]} />}
+          {isSelected && (
+            <Transformer
+              ref={trRef}
+              rotateEnabled={false}
+              enabledAnchors={["middle-left", "middle-right"]}
+            />
+          )}
         </Group>
       );
-    
+
     case "pen":
       return (
         <Line
-         id={shape.id}
+          id={shape.id}
           points={shape.points}
           stroke={shape.stroke}
           strokeWidth={shape.strokeWidth}
@@ -427,7 +584,7 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
           tension={0.3}
         />
       );
-    
+
     default:
       return null;
   }
@@ -450,10 +607,34 @@ const SelectionRect = ({ rect }) => {
         listening={false}
       />
       {/* Corner indicators */}
-      <Circle x={rect.x} y={rect.y} radius={3} fill="#2563eb" listening={false} />
-      <Circle x={rect.x + rect.width} y={rect.y} radius={3} fill="#2563eb" listening={false} />
-      <Circle x={rect.x} y={rect.y + rect.height} radius={3} fill="#2563eb" listening={false} />
-      <Circle x={rect.x + rect.width} y={rect.y + rect.height} radius={3} fill="#2563eb" listening={false} />
+      <Circle
+        x={rect.x}
+        y={rect.y}
+        radius={3}
+        fill="#2563eb"
+        listening={false}
+      />
+      <Circle
+        x={rect.x + rect.width}
+        y={rect.y}
+        radius={3}
+        fill="#2563eb"
+        listening={false}
+      />
+      <Circle
+        x={rect.x}
+        y={rect.y + rect.height}
+        radius={3}
+        fill="#2563eb"
+        listening={false}
+      />
+      <Circle
+        x={rect.x + rect.width}
+        y={rect.y + rect.height}
+        radius={3}
+        fill="#2563eb"
+        listening={false}
+      />
     </Group>
   );
 };
@@ -473,17 +654,17 @@ export default function VoidCanvasWhiteboard() {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [selectionRect, setSelectionRect] = useState(null);
   const [clipboard, setClipboard] = useState([]);
-  
+
   // Style states
   const [fillColor, setFillColor] = useState("#dbeafe");
   const [strokeColor, setStrokeColor] = useState("#1e293b");
   const [strokeWidth, setStrokeWidth] = useState(2);
-  
+
   const spacePressed = useRef(false);
   const startPos = useRef({ x: 0, y: 0 });
 
-  const selectedElements = elements.filter(el => selectedIds.includes(el.id));
-  
+  const selectedElements = elements.filter((el) => selectedIds.includes(el.id));
+
   // --- History helpers
   const pushHistory = (next) => {
     setHistory((h) => [...h, elements]);
@@ -496,7 +677,7 @@ export default function VoidCanvasWhiteboard() {
     const prev = history[history.length - 1];
     setFuture((f) => [elements, ...f]);
     setElements(prev);
-    setHistory(h => h.slice(0, -1));
+    setHistory((h) => h.slice(0, -1));
     setSelectedIds([]);
   };
 
@@ -515,18 +696,26 @@ export default function VoidCanvasWhiteboard() {
   // --- Keyboard shortcuts
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.code === "Space" && !spacePressed.current) { 
-        spacePressed.current = true; 
-        setTool(TOOLS.HAND); 
+      if (e.code === "Space" && !spacePressed.current) {
+        spacePressed.current = true;
+        setTool(TOOLS.HAND);
         e.preventDefault();
       }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && !e.shiftKey) { 
-        e.preventDefault(); 
-        undo(); 
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === "z" &&
+        !e.shiftKey
+      ) {
+        e.preventDefault();
+        undo();
       }
-      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === "y" || (e.key.toLowerCase() === "z" && e.shiftKey))) { 
-        e.preventDefault(); 
-        redo(); 
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key.toLowerCase() === "y" ||
+          (e.key.toLowerCase() === "z" && e.shiftKey))
+      ) {
+        e.preventDefault();
+        redo();
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
         e.preventDefault();
@@ -542,7 +731,7 @@ export default function VoidCanvasWhiteboard() {
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
         e.preventDefault();
-        setSelectedIds(elements.map(el => el.id));
+        setSelectedIds(elements.map((el) => el.id));
       }
       if (e.key === "Delete" || e.key === "Backspace") {
         e.preventDefault();
@@ -553,19 +742,19 @@ export default function VoidCanvasWhiteboard() {
         setSelectionRect(null);
       }
     };
-    
-    const onKeyUp = (e) => { 
-      if (e.code === "Space") { 
-        spacePressed.current = false; 
-        setTool(TOOLS.SELECT); 
-      } 
+
+    const onKeyUp = (e) => {
+      if (e.code === "Space") {
+        spacePressed.current = false;
+        setTool(TOOLS.SELECT);
+      }
     };
-    
+
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
-    return () => { 
-      window.removeEventListener("keydown", onKeyDown); 
-      window.removeEventListener("keyup", onKeyUp); 
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
     };
   }, [elements, selectedIds]);
 
@@ -635,22 +824,49 @@ export default function VoidCanvasWhiteboard() {
         newElement = { ...baseProps, type: "diamond", radius: 1 };
         break;
       case TOOLS.STAR:
-        newElement = { ...baseProps, type: "star", outerRadius: 1, innerRadius: 0.5, numPoints: 5 };
+        newElement = {
+          ...baseProps,
+          type: "star",
+          outerRadius: 1,
+          innerRadius: 0.5,
+          numPoints: 5,
+        };
         break;
       case TOOLS.HEXAGON:
         newElement = { ...baseProps, type: "hexagon", radius: 1 };
         break;
       case TOOLS.ARROW:
-        newElement = { ...baseProps, type: "arrow", points: [pointer.x, pointer.y, pointer.x, pointer.y] };
+        newElement = {
+          ...baseProps,
+          type: "arrow",
+          points: [pointer.x, pointer.y, pointer.x, pointer.y],
+        };
         break;
       case TOOLS.TEXT:
-        newElement = { ...baseProps, type: "text", text: "Text", fontSize: 18, fill: strokeColor };
+        newElement = {
+          ...baseProps,
+          type: "text",
+          text: "Text",
+          fontSize: 18,
+          fill: strokeColor,
+        };
         break;
       case TOOLS.PEN:
-        newElement = { ...baseProps, type: "pen", points: [pointer.x, pointer.y], stroke: strokeColor };
+        newElement = {
+          ...baseProps,
+          type: "pen",
+          points: [pointer.x, pointer.y],
+          stroke: strokeColor,
+        };
         break;
       case TOOLS.ERASER:
-        newElement = { ...baseProps, type: "pen", points: [pointer.x, pointer.y], stroke: "#ffffff", strokeWidth: 14 };
+        newElement = {
+          ...baseProps,
+          type: "pen",
+          points: [pointer.x, pointer.y],
+          stroke: "#ffffff",
+          strokeWidth: 14,
+        };
         break;
       default:
         return;
@@ -725,46 +941,46 @@ export default function VoidCanvasWhiteboard() {
           el.points = [...el.points, pointer.x, pointer.y];
           break;
       }
-      
+
       next[idx] = el;
       return next;
     });
   };
 
   const handleMouseUp = () => {
-  if (tool === TOOLS.RECT_SELECT && selectionRect) {
-    const stage = stageRef.current;
-    const layer = layerRef.current;
+    if (tool === TOOLS.RECT_SELECT && selectionRect) {
+      const stage = stageRef.current;
+      const layer = layerRef.current;
 
-    // ✅ Normalize selection rect (always positive width/height)
-    const normRect = {
-      x: Math.min(selectionRect.x, selectionRect.x + selectionRect.width),
-      y: Math.min(selectionRect.y, selectionRect.y + selectionRect.height),
-      width: Math.abs(selectionRect.width),
-      height: Math.abs(selectionRect.height),
-    };
+      // ✅ Normalize selection rect (always positive width/height)
+      const normRect = {
+        x: Math.min(selectionRect.x, selectionRect.x + selectionRect.width),
+        y: Math.min(selectionRect.y, selectionRect.y + selectionRect.height),
+        width: Math.abs(selectionRect.width),
+        height: Math.abs(selectionRect.height),
+      };
 
-    const selectedInRect = elements.filter((el) => {
-      const node = layer.findOne(`#${el.id}`);
-      if (!node) return false;
+      const selectedInRect = elements.filter((el) => {
+        const node = layer.findOne(`#${el.id}`);
+        if (!node) return false;
 
-      const box = node.getClientRect({ relativeTo: stage });
+        const box = node.getClientRect({ relativeTo: stage });
 
-      // ✅ containment check
-      return (
-        box.x >= normRect.x &&
-        box.y >= normRect.y &&
-        box.x + box.width <= normRect.x + normRect.width &&
-        box.y + box.height <= normRect.y + normRect.height
-      );
-    });
+        // ✅ containment check
+        return (
+          box.x >= normRect.x &&
+          box.y >= normRect.y &&
+          box.x + box.width <= normRect.x + normRect.width &&
+          box.y + box.height <= normRect.y + normRect.height
+        );
+      });
 
-    setSelectedIds(selectedInRect.map((el) => el.id));
-    setSelectionRect(null);
-  }
+      setSelectedIds(selectedInRect.map((el) => el.id));
+      setSelectionRect(null);
+    }
 
-  setIsDrawing(false);
-};
+    setIsDrawing(false);
+  };
 
   // Zoom with wheel
   const handleWheel = (e) => {
@@ -795,7 +1011,9 @@ export default function VoidCanvasWhiteboard() {
   };
 
   const updateShape = (id, attrs) => {
-    setElements((els) => els.map((s) => (s.id === id ? { ...s, ...attrs } : s)));
+    setElements((els) =>
+      els.map((s) => (s.id === id ? { ...s, ...attrs } : s))
+    );
   };
 
   const onDelete = () => {
@@ -806,37 +1024,41 @@ export default function VoidCanvasWhiteboard() {
 
   const onCopy = () => {
     if (selectedIds.length === 0) return;
-    const selectedElements = elements.filter(el => selectedIds.includes(el.id));
+    const selectedElements = elements.filter((el) =>
+      selectedIds.includes(el.id)
+    );
     setClipboard(selectedElements);
   };
 
   const onPaste = () => {
     if (clipboard.length === 0) return;
-    
-    const newElements = clipboard.map(el => ({
+
+    const newElements = clipboard.map((el) => ({
       ...el,
       id: uid("shape"),
       x: el.x + 20,
       y: el.y + 20,
     }));
-    
+
     pushHistory([...elements, ...newElements]);
-    setSelectedIds(newElements.map(el => el.id));
+    setSelectedIds(newElements.map((el) => el.id));
   };
 
   const onDuplicate = () => {
     if (selectedIds.length === 0) return;
-    
-    const selectedElements = elements.filter(el => selectedIds.includes(el.id));
-    const newElements = selectedElements.map(el => ({
+
+    const selectedElements = elements.filter((el) =>
+      selectedIds.includes(el.id)
+    );
+    const newElements = selectedElements.map((el) => ({
       ...el,
       id: uid("shape"),
       x: el.x + 20,
       y: el.y + 20,
     }));
-    
+
     pushHistory([...elements, ...newElements]);
-    setSelectedIds(newElements.map(el => el.id));
+    setSelectedIds(newElements.map((el) => el.id));
   };
 
   const onGroup = () => {
@@ -854,16 +1076,16 @@ export default function VoidCanvasWhiteboard() {
   const onExportPNG = () => {
     const stage = stageRef.current;
     if (!stage) return;
-    
+
     // Temporarily hide selection
     const tempSelectedIds = selectedIds;
     setSelectedIds([]);
-    
+
     setTimeout(() => {
-      const uri = stage.toDataURL({ 
+      const uri = stage.toDataURL({
         pixelRatio: 2,
         quality: 1,
-        mimeType: 'image/png'
+        mimeType: "image/png",
       });
       downloadURI(uri, `whiteboard-${Date.now()}.png`);
       setSelectedIds(tempSelectedIds);
@@ -872,15 +1094,19 @@ export default function VoidCanvasWhiteboard() {
 
   // Export JSON
   const onExportJSON = () => {
-    const data = JSON.stringify({ 
-      elements,
-      metadata: {
-        version: "1.0",
-        created: new Date().toISOString(),
-        zoom,
-        offset
-      }
-    }, null, 2);
+    const data = JSON.stringify(
+      {
+        elements,
+        metadata: {
+          version: "1.0",
+          created: new Date().toISOString(),
+          zoom,
+          offset,
+        },
+      },
+      null,
+      2
+    );
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     downloadURI(url, `whiteboard-${Date.now()}.json`);
@@ -891,7 +1117,7 @@ export default function VoidCanvasWhiteboard() {
   const onImportJSON = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
     reader.onload = () => {
       try {
@@ -925,9 +1151,9 @@ export default function VoidCanvasWhiteboard() {
   // Multi-transformer for multiple selection
   const MultiTransformer = () => {
     const transformerRef = useRef();
-    const selectedShapes = selectedIds.map(id => 
-      stageRef.current?.findOne(`#${id}`)
-    ).filter(Boolean);
+    const selectedShapes = selectedIds
+      .map((id) => stageRef.current?.findOne(`#${id}`))
+      .filter(Boolean);
 
     useEffect(() => {
       if (transformerRef.current && selectedShapes.length > 1) {
@@ -956,6 +1182,31 @@ export default function VoidCanvasWhiteboard() {
     onClick: handleStageClick,
     style: { background: "#ffffff" },
   };
+  const grid = useMemo(() => {
+    const size = 32;
+    const lines = [];
+    for (let i = -20000; i <= 20000; i += size) {
+      lines.push(
+        <Line
+          key={`v${i}`}
+          points={[i, -20000, i, 20000]}
+          stroke="#f0f0f0"
+          strokeWidth={1}
+          listening={false} // makes sure grid is not selectable
+        />
+      );
+      lines.push(
+        <Line
+          key={`h${i}`}
+          points={[-20000, i, 20000, i]}
+          stroke="#f0f0f0"
+          strokeWidth={1}
+          listening={false}
+        />
+      );
+    }
+    return lines;
+  }, []);
 
   return (
     <div className="w-screen h-screen bg-gray-50 text-gray-900 overflow-hidden">
@@ -987,21 +1238,24 @@ export default function VoidCanvasWhiteboard() {
       />
 
       <Stage ref={stageRef} {...stageProps}>
+        <Layer>{grid}</Layer>
         <Layer ref={layerRef} listening={true}>
           {/* Render all elements */}
           {elements.map((s) => (
             <Shape
               key={s.id}
               shape={s}
-              isSelected={selectedIds.includes(s.id) && selectedIds.length === 1}
+              isSelected={
+                selectedIds.includes(s.id) && selectedIds.length === 1
+              }
               onSelect={() => onSelectShape(s.id)}
               onChange={(attrs) => updateShape(s.id, attrs)}
             />
           ))}
-          
+
           {/* Multi-selection transformer */}
           <MultiTransformer />
-          
+
           {/* Selection rectangle */}
           <SelectionRect rect={selectionRect} />
         </Layer>
@@ -1013,21 +1267,46 @@ export default function VoidCanvasWhiteboard() {
           <span>Tool: {tool}</span>
           <span>Zoom: {Math.round(zoom * 100)}%</span>
           <span>Elements: {elements.length}</span>
-          {selectedIds.length > 0 && <span>Selected: {selectedIds.length}</span>}
+          {selectedIds.length > 0 && (
+            <span>Selected: {selectedIds.length}</span>
+          )}
         </div>
       </div>
 
       {/* Tips */}
       <div className="fixed bottom-3 right-3 text-xs text-gray-600 bg-white/80 backdrop-blur border rounded-lg px-3 py-2 max-w-xs">
         <div className="space-y-1">
-          <div><kbd className="px-1 bg-gray-200 rounded text-xs">Space</kbd> + drag to pan</div>
-          <div><kbd className="px-1 bg-gray-200 rounded text-xs">Mouse wheel</kbd> to zoom</div>
-          <div><kbd className="px-1 bg-gray-200 rounded text-xs">Double-click</kbd> text to edit</div>
-          <div><kbd className="px-1 bg-gray-200 rounded text-xs">Ctrl+Z/Y</kbd> undo/redo</div>
-          <div><kbd className="px-1 bg-gray-200 rounded text-xs">Ctrl+C/V/D</kbd> copy/paste/duplicate</div>
-          <div><kbd className="px-1 bg-gray-200 rounded text-xs">Del</kbd> to delete selected</div>
-          <div><kbd className="px-1 bg-gray-200 rounded text-xs">Ctrl+A</kbd> select all</div>
-          <div><kbd className="px-1 bg-gray-200 rounded text-xs">Esc</kbd> deselect</div>
+          <div>
+            <kbd className="px-1 bg-gray-200 rounded text-xs">Space</kbd> + drag
+            to pan
+          </div>
+          <div>
+            <kbd className="px-1 bg-gray-200 rounded text-xs">Mouse wheel</kbd>{" "}
+            to zoom
+          </div>
+          <div>
+            <kbd className="px-1 bg-gray-200 rounded text-xs">Double-click</kbd>{" "}
+            text to edit
+          </div>
+          <div>
+            <kbd className="px-1 bg-gray-200 rounded text-xs">Ctrl+Z/Y</kbd>{" "}
+            undo/redo
+          </div>
+          <div>
+            <kbd className="px-1 bg-gray-200 rounded text-xs">Ctrl+C/V/D</kbd>{" "}
+            copy/paste/duplicate
+          </div>
+          <div>
+            <kbd className="px-1 bg-gray-200 rounded text-xs">Del</kbd> to
+            delete selected
+          </div>
+          <div>
+            <kbd className="px-1 bg-gray-200 rounded text-xs">Ctrl+A</kbd>{" "}
+            select all
+          </div>
+          <div>
+            <kbd className="px-1 bg-gray-200 rounded text-xs">Esc</kbd> deselect
+          </div>
         </div>
       </div>
     </div>
