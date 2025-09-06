@@ -476,7 +476,6 @@ const Shape = ({ shape, isSelected, onSelect, onChange }) => {
             fill={shape.fill}
             stroke={shape.stroke}
             strokeWidth={shape.strokeWidth}
-            rotation={45}
             {...common}
           />
           {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
@@ -979,6 +978,19 @@ export default function VoidCanvasWhiteboard() {
       setSelectionRect(null);
     }
 
+    if (
+      tool === TOOLS.RECT ||
+      tool === TOOLS.CIRCLE ||
+      tool === TOOLS.TRIANGLE ||
+      tool === TOOLS.ARROW ||
+      tool === TOOLS.ELLIPSE ||
+      tool === TOOLS.STAR ||
+      tool === TOOLS.DIAMOND ||
+      tool === TOOLS.HEXAGON ||
+      tool === TOOLS.TEXT
+    ) {
+      setTool(TOOLS.SELECT);
+    }
     setIsDrawing(false);
   };
 
